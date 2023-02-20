@@ -1,0 +1,146 @@
+{   "Description":"To launch a npm app from github repo link",
+
+    #Parameters are appname and repo details of github
+    "Parameters": {
+        "AppName":{
+            "Type":"String",
+            "Default":"myapp"
+        },
+        "Repository": {
+            "Type": "String",
+            "Description": "GitHub Repository URL"
+        },
+        "OauthToken": {
+            "Type": "String",
+            "Description": "GitHub token for repo read",
+            "NoEcho": true
+        },
+        "OauthTokenNPM": {
+            "Type": "String",
+            "Description": "GitHub token for private npm",
+            "NoEcho": true
+        }
+    },
+
+    #Resources include IAM policy and amplify app specifications
+    "Resources": {
+        "AmplifyRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "amplify.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": "Amplify",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "amplify:*",
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "AmplifyApp": {
+            "Type": "AWS::Amplify::App",
+            "Properties": {
+                "Name": "firstapp",
+                "Repository": {
+                    "Ref": "Repository"
+                },
+                "Description": "a test website",
+                "OauthToken": {
+                    "Ref": "OauthToken"
+                },
+                "EnvironmentVariables": [
+                    {
+                        "Name": "NPM_PASS",
+                        "Value": {
+                            "Ref": "OauthTokenNPM"
+                        }
+                    }
+                ],
+                "AutoBranchCreationConfig": {
+                    "EnableAutoBranchCreation": true,
+                    "EnableAutoBuild": false
+                },
+                # make changes in this buildspec for the email and endpoints
+                "BuildSpec": "version: 0.1\nfrontend:\n  phases:\n    preBuild:\n      commands:\n        - cd gatsby\n        - nvm use $VERSION_NODE_12\n        - npx npm-cli-login -u example-user -p $NPM_PASS -e webmaster@example.com -r http://npmregistry.example.com\n        - npm config set always-auth true\n        - npm config set registry=http://npmregistry.example.com/\n        - yarn\n\n    build:\n      commands:\n        - nvm use $VERSION_NODE_12\n        - yarn run build\n  artifacts:\n    baseDirectory: gatsby/public\n    files:\n      - '**/*'\n  cache:\n    paths:\n      - node_modules/**/*",
+                "CustomRules": [
+                    {
+                        "Source": "gatsby/public/index.html",
+                        "Target": "/index.html",
+                        "Status": "200"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {"Ref":"AppName"}
+                    }
+                ],
+                "IAMServiceRole": {
+                    "Fn::GetAtt": [
+                        "AmplifyRole",
+                        "Arn"
+                    ]
+                }
+            }
+        },
+        "AmplifyBranch": {
+            "Type": "AWS::Amplify::Branch",
+            "Properties": {
+                "BranchName": "develop",
+                "AppId": {
+                    "Fn::GetAtt": [
+                        "AmplifyApp",
+                        "AppId"
+                    ]
+                },
+                "Description": "Develop Branch",
+                "EnableAutoBuild": false,
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {"Ref":"AppName"}
+                    },
+                    {
+                        "Key": "Branch",
+                        "Value": "develop"
+                    }
+                ]
+            }
+        }
+    },
+
+    #Return the app domain
+    "Outputs": {
+        "DefaultDomain": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "AmplifyApp",
+                    "DefaultDomain"
+                ]
+            }
+        }
+    }
+}
