@@ -23,7 +23,7 @@ def home():
         <td>{str(list_of_data['sys']['country'])}</td>
         <td>{str(list_of_data['coord']['lon']) + ' ' 
                     + str(list_of_data['coord']['lat'])}</td>
-        <td>{str(list_of_data['main']['temp']) + 'k'}</td>
+        <td>{str(list_of_data['main']['temp']) + 'K'}</td>
         <td>{str(list_of_data['main']['pressure'])}</td>
         <td>{str(list_of_data['main']['humidity'])}</td>
     </tr>
