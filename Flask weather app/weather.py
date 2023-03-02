@@ -15,7 +15,7 @@ def home():
     <table border="1">
     <tr>
         <td>country_code</td>
-        <td>coordinate</td>
+        <td>coordinates</td>
         <td>temp</td>
         <td>pressure</td>
         <td>humidity</td>
