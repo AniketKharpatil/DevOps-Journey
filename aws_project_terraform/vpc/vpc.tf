@@ -1,10 +1,3 @@
-  # Provider for aws
-  provider "aws" {
-    region = "us-east-1"
-    access_key = "my-access-key"
-    secret_key = "my-secret-key"
-  }
-  
   # Create VPC
   resource "aws_vpc" "main-vpc" {
       cidr_block = "10.0.0.0/16"
@@ -91,8 +84,8 @@
     route_table_id = aws_route_table.private-rtb-az2.id
   }
 
-  # Endpoint to S3 bucket  
-  resource "aws_vpc_endpoint" "ep-s3" {
-  vpc_id       = aws_vpc.main-vpc.id
-  service_name = "com.amazonaws.us-west-2.s3"
-  }
+  # Endpoint to S3 bucket  (use if you want to create a demo project for vpc)
+  # resource "aws_vpc_endpoint" "ep-s3" {
+  # vpc_id       = aws_vpc.main-vpc.id
+  # service_name = "com.amazonaws.us-west-2.s3"
+  # }
