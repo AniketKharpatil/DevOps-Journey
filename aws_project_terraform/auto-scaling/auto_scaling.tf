@@ -20,6 +20,9 @@
     name        = "bastion"
     description = "SG for bastion host" 
     vpc_id      = var.vpc_id
+    tags = {
+      Name = "bastion-sg"
+    }
 
     ingress {
       from_port   = 22
@@ -44,6 +47,9 @@
     subnet_id = var.public_subnet_az1_id
     
     security_groups = [aws_security_group.bastion.id]
+    tags = {
+      Name = "Bastion" 
+    }
   }
 
   # ASG------------------------------------------------------------------------------------
@@ -54,6 +60,9 @@
     name        = "asg-instances"
     description = "SG for ASG instances"
     vpc_id      = var.vpc_id
+    tags = {
+      Name = "ASG-SecurityGroup" 
+    }
 
     ingress {
       from_port   = 22
