@@ -23,7 +23,7 @@
 
   # Security group for bastion host
   resource "aws_security_group" "bastion-sg" {  
-    name        = "bastion"
+    name        = "bastion-sg"
     description = "SG for bastion host" 
     vpc_id      = var.vpc_id
     tags = {
@@ -61,6 +61,8 @@
     key_name = aws_key_pair.bastion_key.key_name
     vpc_security_group_ids = [aws_security_group.bastion-sg.id]
     subnet_id = var.public_subnet_az1_id
+    
+    associate_public_ip_address = true
     monitoring = false
     tags = {
       Name = "Bastion Host" 
