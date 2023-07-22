@@ -58,13 +58,12 @@
   resource "aws_instance" "bastion" {
     ami           = data.aws_ami.amazon_linux.id
     instance_type = "t2.micro"
-    availability_zone = "us-east-1a"
-    key_name = aws_key_pair.bastion_key
+    key_name = aws_key_pair.bastion_key.key_name
+    vpc_security_group_ids = [aws_security_group.bastion-sg.id]
     subnet_id = var.public_subnet_az1_id
     monitoring = false
-    security_groups = [aws_security_group.bastion-sg.id]
     tags = {
-      Name = "Bastion" 
+      Name = "Bastion Host" 
     }
   }
 
@@ -73,7 +72,7 @@
 
   
   # Security group for ASG instances
-  resource "aws_security_group" "asg" {  
+  resource "aws_security_group" "asg_SecurityGroup" {  
     name        = "asg-instances"
     description = "SG for ASG instances"
     vpc_id      = var.vpc_id
@@ -95,7 +94,7 @@
     name_prefix     = "terraform-lc"
     image_id        = data.aws_ami.amazon_linux.id
     instance_type   = "t2.micro"
-    security_groups = [aws_security_group.asg.id]
+    security_groups = [aws_security_group.asg_SecurityGroup.id]
 
     # can bring you cost if enabled
     enable_monitoring = false
@@ -105,17 +104,10 @@
     }
   }
 
-  # placement group
-  resource "aws_placement_group" "asg_pg" {
-    name      = "asg-instances"
-    strategy  = "cluster"
-  }
-
   # Auto scaling group
   resource "aws_autoscaling_group" "private_asg" {
     name                 = "terraform-asg"
     launch_configuration = aws_launch_configuration.lc.name
-    placement_group = aws_placement_group.asg_pg
     vpc_zone_identifier = var.subnets
 
     min_size = 2
