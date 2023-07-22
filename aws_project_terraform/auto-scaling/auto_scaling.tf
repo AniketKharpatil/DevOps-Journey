@@ -15,8 +15,14 @@
     owners = ["amazon"] 
   }
 
+  # keypair for public ec2 instance
+  resource "aws_key_pair" "bastion_key" {
+    key_name   = "bastion-key"
+    public_key = file("~/.ssh/id_rsa.pub")
+  }
+
   # Security group for bastion host
-  resource "aws_security_group" "bastion" {  
+  resource "aws_security_group" "bastion-sg" {  
     name        = "bastion"
     description = "SG for bastion host" 
     vpc_id      = var.vpc_id
@@ -53,9 +59,10 @@
     ami           = data.aws_ami.amazon_linux.id
     instance_type = "t2.micro"
     availability_zone = "us-east-1a"
+    key_name = aws_key_pair.bastion_key
     subnet_id = var.public_subnet_az1_id
     monitoring = false
-    security_groups = [aws_security_group.bastion.id]
+    security_groups = [aws_security_group.bastion-sg.id]
     tags = {
       Name = "Bastion" 
     }
@@ -89,7 +96,7 @@
     image_id        = data.aws_ami.amazon_linux.id
     instance_type   = "t2.micro"
     security_groups = [aws_security_group.asg.id]
-    
+
     # can bring you cost if enabled
     enable_monitoring = false
 
