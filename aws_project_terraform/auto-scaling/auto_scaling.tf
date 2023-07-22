@@ -89,6 +89,9 @@
     image_id        = data.aws_ami.amazon_linux.id
     instance_type   = "t2.micro"
     security_groups = [aws_security_group.asg.id]
+    
+    # can bring you cost if enabled
+    enable_monitoring = false
 
     lifecycle {
       create_before_destroy = true  
