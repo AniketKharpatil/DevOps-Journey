@@ -54,12 +54,13 @@
     instance_type = "t2.micro"
     availability_zone = "us-east-1a"
     subnet_id = var.public_subnet_az1_id
-    
+    monitoring = false
     security_groups = [aws_security_group.bastion.id]
     tags = {
       Name = "Bastion" 
     }
   }
+
 
   # ASG------------------------------------------------------------------------------------
 
@@ -94,20 +95,25 @@
     }
   }
 
+  # placement group
+  resource "aws_placement_group" "asg_pg" {
+    name      = "asg-instances"
+    strategy  = "cluster"
+  }
+
   # Auto scaling group
   resource "aws_autoscaling_group" "private_asg" {
     name                 = "terraform-asg"
     launch_configuration = aws_launch_configuration.lc.name
-    # placement_group = 
+    placement_group = aws_placement_group.asg_pg
     vpc_zone_identifier = var.subnets
-    
 
     min_size = 2
     max_size = 4
 
     tag {
       key                 = "Name"
-      value               = "private-asg"
+      value               = "private-asg-instance"
       propagate_at_launch = true
     }
   }
