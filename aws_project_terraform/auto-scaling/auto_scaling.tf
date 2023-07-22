@@ -1,18 +1,18 @@
   # Get the latest Linux AMI 
-  data "aws_ami" "ubuntu" {
+  data "aws_ami" "amazon_linux" {
     most_recent = true
-
-    filter {
-      name   = "name"
-      values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"] 
-    }
 
     filter {
       name   = "virtualization-type"
       values = ["hvm"]
     }
 
-    # owners = ["099720109477"] # Canonical
+    filter {
+      name   = "name"
+      values = ["amzn-ami-hvm*"] 
+    }
+
+    owners = ["amazon"] 
   }
 
   # Security group for bastion host
@@ -41,7 +41,7 @@
   
   # Bastion host instance
   resource "aws_instance" "bastion" {
-    ami           = data.aws_ami.ubuntu.id
+    ami           = data.aws_ami.amazon_linux.id
     instance_type = "t2.micro"
     availability_zone = "us-east-1a"
     subnet_id = var.public_subnet_az1_id
@@ -75,7 +75,7 @@
   # Launch configuration
   resource "aws_launch_configuration" "lc" {
     name_prefix     = "terraform-lc"
-    image_id        = data.aws_ami.ubuntu.id  
+    image_id        = data.aws_ami.amazon_linux.id
     instance_type   = "t2.micro"
     security_groups = [aws_security_group.asg.id]
 
@@ -90,6 +90,7 @@
     launch_configuration = aws_launch_configuration.lc.name
     # placement_group = 
     vpc_zone_identifier = var.subnets
+    
 
     min_size = 2
     max_size = 4
