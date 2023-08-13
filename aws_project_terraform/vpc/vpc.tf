@@ -110,3 +110,45 @@
     subnet_id      = aws_subnet.private-subnet-az2.id
     route_table_id = aws_route_table.private-rtb-az2.id
   }
+
+
+  # Create NAT Gateway for AZ1
+  resource "aws_nat_gateway" "nat-gw-az1" {
+    allocation_id = aws_eip.nat-eip-az1.id
+    subnet_id     = aws_subnet.public-subnet-az1.id
+    tags = {
+      Name = "nat-gw-az1"
+    }
+  }
+
+  # Create EIP for NAT Gateway AZ1
+  resource "aws_eip" "nat-eip-az1" {
+    vpc = true
+  }
+
+  # Create route in private route table AZ1 to NAT Gateway
+  resource "aws_route" "nat-route-az1" {
+    route_table_id         = aws_route_table.private-rtb-az1.id
+    destination_cidr_block = "0.0.0.0/0" 
+    nat_gateway_id         = aws_nat_gateway.nat-gw-az1.id
+  }
+
+  # Repeat for AZ2
+
+  resource "aws_nat_gateway" "nat-gw-az2" {
+    allocation_id = aws_eip.nat-eip-az2.id
+    subnet_id     = aws_subnet.public-subnet-az2.id
+    tags = {
+      Name = "nat-gw-az2"
+    }
+  }
+
+  resource "aws_eip" "nat-eip-az2" {
+    vpc = true
+  }
+
+  resource "aws_route" "nat-route-az2" {
+    route_table_id         = aws_route_table.private-rtb-az2.id
+    destination_cidr_block = "0.0.0.0/0" 
+    nat_gateway_id         = aws_nat_gateway.nat-gw-az2.id
+  }
