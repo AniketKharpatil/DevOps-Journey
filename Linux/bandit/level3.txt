@@ -1,0 +1,22 @@
+Level Goal
+The password for the next level is stored in a hidden file in the inhere directory.
+
+------------------------------------------
+
+ssh bandit.labs.overthewire.org -p2220 -l bandit3
+
+#Using ls can lead to finding "inhere" file, but "cat inhere" does not work in showing what is inside. 
+#Need to find the hidden file. 
+#we can do that by ls. then a file called inhere will show. 
+#we need to go inside inhere by cd, and then ls -la to look at all the files and their names inside. 
+#one file name is .hidden and we can cat .hidden
+
+ls
+
+cat inhere
+
+cd inhere
+
+ls -la
+
+cat .hidden

@@ -5,13 +5,12 @@
     secret_key = "secret_key"
   }
   
-
  # module for vpc
  module "vpc" {
     source = "./vpc"
  }
 
-# module for auto-scaling group
+ # module for auto-scaling group
  module "auto-scaling" {
     source = "./auto-scaling"
     vpc_id=module.vpc.vpc_id
@@ -19,7 +18,7 @@
     public_subnet_az1_id = module.vpc.public_subnet_az1_id
  }
 
-# module for load balancer
+ # module for load balancer
  module "alb" {
     source = "./load_balancer"
     vpc_id=module.vpc.vpc_id
