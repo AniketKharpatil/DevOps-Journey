@@ -112,19 +112,22 @@
   }
 
 
+  # Create EIP for NAT Gateway AZ1
+  resource "aws_eip" "nat-eip" {
+    domain   = "vpc"
+  }
+
+
   # Create NAT Gateway for AZ1
   resource "aws_nat_gateway" "nat-gw-az1" {
-    allocation_id = aws_eip.nat-eip-az1.id
+    allocation_id = aws_eip.nat-eip.id
     subnet_id     = aws_subnet.public-subnet-az1.id
+    depends_on    = [aws_internet_gateway.main-igw]
     tags = {
       Name = "nat-gw-az1"
     }
   }
 
-  # Create EIP for NAT Gateway AZ1
-  resource "aws_eip" "nat-eip-az1" {
-    vpc = true
-  }
 
   # Create route in private route table AZ1 to NAT Gateway
   resource "aws_route" "nat-route-az1" {
@@ -136,16 +139,17 @@
   # Repeat for AZ2
 
   resource "aws_nat_gateway" "nat-gw-az2" {
-    allocation_id = aws_eip.nat-eip-az2.id
+    allocation_id = aws_eip.nat-eip.id
     subnet_id     = aws_subnet.public-subnet-az2.id
+    depends_on    = [aws_internet_gateway.main-igw]
     tags = {
       Name = "nat-gw-az2"
     }
   }
 
-  resource "aws_eip" "nat-eip-az2" {
-    vpc = true
-  }
+#  resource "aws_eip" "nat-eip-az2" {
+#    vpc = true
+#  }
 
   resource "aws_route" "nat-route-az2" {
     route_table_id         = aws_route_table.private-rtb-az2.id
