@@ -4,7 +4,7 @@ metadata:
   name: web-app
 spec:
   selector:
-    app: simple-html-website
+    app: web-app
   ports:
     - protocol: TCP
       port: 80
