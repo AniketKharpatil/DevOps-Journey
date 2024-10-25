@@ -1,0 +1,30 @@
+#File 1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx1
+spec:
+  selector:
+    matchLabels:
+      app: nginx1
+  replicas: 1
+  template:
+    metadata:
+      labels: 
+        app: nginx1
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+            - name: index-file-1
+              mountPath: /usr/share/nginx/html
+      volumes:
+      - name: index-file-1
+        configMap:
+          name: html-configmap-1
+          items: 
+            - key: index.html
+              path: index.html

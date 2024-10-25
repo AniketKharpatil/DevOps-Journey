@@ -1,0 +1,28 @@
+# ingress 1
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    # kubernetes.io/ingress.class: "nginx"
+    # nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: myapp.test.com
+    http:
+      paths:      
+      - path: /one
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service-1
+            port:
+              number: 80
+      - path: /two
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service-2
+            port:
+              number: 80
